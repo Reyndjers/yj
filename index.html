@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yellow Jack - Калькулятор</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 50%, #fed7aa 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #d97706 0%, #ea580c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: white;
+            border: 3px solid #d97706;
+            color: #d97706;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn:hover {
+            background: #fef3c7;
+        }
+
+        .tab-btn.active {
+            background: #d97706;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            color: #b45309;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #fcd34d;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        
+        .product-btn {
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            border: 2px solid #fcd34d;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        
+        .product-btn:hover {
+            background: linear-gradient(135deg, #fde68a 0%, #fdba74 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .product-name {
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: #d97706;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .cart {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #fcd34d;
+        }
+        
+        .cart-header h2 {
+            color: #b45309;
+            margin: 0;
+            border: none;
+            padding: 0;
+        }
+        
+        .clear-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .clear-btn:hover {
+            background: #dc2626;
+        }
+        
+        .cart-items {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .cart-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item-name {
+            font-weight: bold;
+            color: #1f2937;
+            flex: 1;
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0 5px;
+        }
+        
+        .delete-btn:hover {
+            color: #dc2626;
+        }
+        
+        .cart-item-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 8px;
+            border: 2px solid #d1d5db;
+        }
+        
+        .qty-btn {
+            background: none;
+            border: none;
+            color: #d97706;
+            font-size: 1.2em;
+            cursor: pointer;
+            font-weight: bold;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .qty-btn:hover {
+            color: #b45309;
+        }
+        
+        .qty-input {
+            width: 60px;
+            text-align: center;
+            border: none;
+            font-weight: bold;
+            font-size: 1em;
+            outline: none;
+        }
+        
+        .qty-input:focus {
+            outline: 2px solid #fbbf24;
+            border-radius: 4px;
+        }
+        
+        .item-total {
+            color: #d97706;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .cart-empty {
+            text-align: center;
+            color: #9ca3af;
+            padding: 40px 0;
+        }
+        
+        .cart-empty-icon {
+            font-size: 4em;
+            opacity: 0.3;
+            margin-bottom: 10px;
+        }
+        
+        .cart-total {
+            border-top: 3px solid #fcd34d;
+            padding-top: 20px;
+        }
+        
+        .total-items {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #6b7280;
+        }
+        
+        .total-price {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #b45309;
+            background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .resource-item {
+            background: #f9fafb;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #d97706;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resource-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .resource-amount {
+            font-weight: bold;
+            color: #d97706;
+            font-size: 1.1em;
+        }
+
+        .resources-section {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏜️ Yellow Jack 🏜️</h1>
+            <p>Калькулятор заказа и крафта</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="tab-btn" onclick="switchTab('craft')">🔨 Калькулятор крафта</button>
+            <button class="tab-btn" onclick="switchTab('warehouse')">📦 Склад</button>
+        </div>
+        
+        <!-- Shop Tab -->
+        <div id="shop-tab" class="tab-content active">
+            <div class="main-grid">
+                <div class="products-section">
+                    <div class="section">
+                        <h2>🍺 Алкоголь (за 1 бутылку)</h2>
+                        <div class="products-grid" id="alcohol"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🚬 Сигареты (за 5 пачек)</h2>
+                        <div class="products-grid" id="cigarettes"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>💨 СНЮС</h2>
+                        <div class="products-grid" id="hookah"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🎩 Сигары</h2>
+                        <div class="products-grid" id="cigars"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🌾 Скупаем (10к 1)</h2>
+                        <div class="products-grid" id="other"></div>
+                    </div>
+                </div>
+                
+                <div class="cart-section">
+                    <div class="section cart">
+                        <div class="cart-header">
+                            <h2>🛒 Корзина</h2>
+                            <button class="clear-btn" onclick="clearCart()" id="clearBtn" style="display: none;">Очистить</button>
+                        </div>
+                        
+                        <div class="cart-items" id="cartItems">
+                            <div class="cart-empty">
+                                <div class="cart-empty-icon">🛒</div>
+                                <p>Корзина пуста</p>
+                            </div>
+                        </div>
+                        
+                        <div class="cart-total" id="cartTotal" style="display: none;">
+                            <div class="total-items">
+                                <span>Товаров:</span>
+                                <span id="totalItems">0</span>
+                            </div>
+                            <div class="total-price">
+                                <span>Итого:</span>
+                                <span id="totalPrice">0 гильз</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Craft Tab -->
+        <div id="craft-tab" class="tab-content">
+            <div class="main-grid">
+                <div class="products-section">
+                    <div class="section">
+                        <h2>🍺 Алкоголь</h2>
+                        <div class="products-grid" id="craftAlcohol"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🚬 Сигареты и сигары</h2>
+                        <div class="products-grid" id="craftCigarettes"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>💨 Снюс</h2>
+                        <div class="products-grid" id="craftSnus"></div>
+                    </div>
+                </div>
+                
+                <div class="cart-section">
+                    <div class="section cart">
+                        <div class="cart-header">
+                            <h2>📦 Нужно ресурсов</h2>
+                            <button class="clear-btn" onclick="clearCraft()" id="clearCraftBtn" style="display: none;">Очистить</button>
+                        </div>
+                        
+                        <div class="resources-section" id="resourcesList">
+                            <div class="cart-empty">
+                                <div class="cart-empty-icon">📦</div>
+                                <p>Выберите что крафтить</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Warehouse Tab -->
+        <div id="warehouse-tab" class="tab-content">
+            <div class="main-grid">
+                <div class="products-section">
+                    <div class="section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 style="margin: 0; border: none; padding: 0;">📦 Мой склад</h2>
+                            <button onclick="showAddResourceModal()" style="background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                                + Добавить ресурс
+                            </button>
+                        </div>
+                        <div id="warehouseList"></div>
+                    </div>
+                </div>
+                
+                <div class="cart-section">
+                    <div class="section cart">
+                        <div class="cart-header">
+                            <h2>📊 Сравнение</h2>
+                        </div>
+                        <div id="comparisonList">
+                            <div class="cart-empty">
+                                <div class="cart-empty-icon">📊</div>
+                                <p>Добавьте товары в калькулятор крафта для сравнения</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for adding/editing resources -->
+        <div id="resourceModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 30px; border-radius: 15px; max-width: 400px; width: 90%;">
+                <h2 style="color: #b45309; margin-bottom: 20px;" id="modalTitle">Добавить ресурс</h2>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #1f2937;">Название:</label>
+                    <input type="text" id="resourceNameInput" style="width: 100%; padding: 10px; border: 2px solid #fcd34d; border-radius: 8px; font-size: 1em;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; font-weight: bold; margin-bottom: 5px; color: #1f2937;">Количество:</label>
+                    <input type="number" id="resourceAmountInput" min="0" value="0" style="width: 100%; padding: 10px; border: 2px solid #fcd34d; border-radius: 8px; font-size: 1em;">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="saveResource()" style="flex: 1; background: #10b981; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">
+                        Сохранить
+                    </button>
+                    <button onclick="closeResourceModal()" style="flex: 1; background: #6b7280; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 1em;">
+                        Отмена
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = {};
+        let craftCart = {};
+        let warehouse = {};
+        let editingResourceName = null;
+
+        const products = {
+            alcohol: [
+                { name: 'Абсент', price: 9 },
+                { name: 'Байдзю', price: 1 },
+                { name: 'Белое вино', price: 1 },
+                { name: 'Бурбон', price: 3 },
+                { name: 'Виски', price: 5 },
+                { name: 'Водка', price: 1 },
+                { name: 'Шампанское', price: 1.5 },
+                { name: 'Красное вино', price: 1 },
+                { name: 'Кука-кула', price: 1.5 },
+                { name: 'Светлое пиво', price: 1 },
+                { name: 'Нефильтрованное пиво', price: 1 },
+                { name: 'Ликер', price: 3 },
+                { name: 'Ром Картер', price: 5 },
+                { name: 'Cake', price: 2 },
+                { name: 'Соджу', price: 2 },
+                { name: 'Текила', price: 1 },
+                { name: 'Пиратский ром', price: 13 },
+                { name: 'Коньяк', price: 4 },
+                { name: 'Темное пиво', price: 1 }
+            ],
+            cigarettes: [
+                { name: 'Ganesha Elite', price: 8 },
+                { name: 'Ganesha', price: 8 },
+                { name: 'Greyhound', price: 8 },
+                { name: 'Мигрант', price: 8 },
+                { name: 'Redwood', price: 16 },
+                { name: 'Killmonger', price: 8 },
+                { name: 'Rendez-Vous', price: 8 },
+                { name: 'Royal Orchid', price: 8 },
+                { name: 'Strike', price: 8 },
+                { name: 'Yellow Coyote', price: 8 },
+                { name: 'Red Apple', price: 8 }
+            ],
+            hookah: [
+                { name: 'Burning Witch', price: 10 },
+                { name: 'Chanunpa', price: 13 },
+                { name: 'Incel Flock', price: 7 },
+                { name: 'Siberian Husky', price: 7 },
+                { name: 'Хевательный табак', price: 6 },
+                { name: 'Ice Mir', price: 7 }
+            ],
+            cigars: [
+                { name: 'Patriot', price: 16 },
+                { name: 'Redwood', price: 18 },
+                { name: 'Blooming Lotus', price: 16 },
+                { name: 'Lovecraft Robust', price: 16 },
+                { name: 'Сигары', price: 24 }
+            ],
+            other: [
+                { name: 'Табак', price: 10 },
+                { name: 'Шалфей', price: 10 },
+                { name: 'Плод опунции', price: 10 },
+                { name: 'Ячмень', price: 10 },
+                { name: 'Хмель', price: 10 },
+                { name: 'Спорынья', price: 10 }
+            ]
+        };
+
+        const craftRecipes = {
+            'Кука-Кула': { output: 10, ingredients: { 'Тара': 10, 'Сахар': 15, 'Вода': 10, 'Листья коки': 20, 'Шалфей': 20 } },
+            'Абсент': { output: 5, ingredients: { 'Тара': 5, 'Бумага': 1, 'Сахар': 60, 'Вода': 5, 'Пшеница': 4, 'Шалфей': 50, 'Спорынья': 50 } },
+            'Байдзю': { output: 10, ingredients: { 'Тара': 10, 'Вода': 10, 'Сахар': 10, 'Рис': 2, 'Шалфей': 6, 'Бумага': 2 } },
+            'Белое вино': { output: 20, ingredients: { 'Тара': 20, 'Вода': 20, 'Сахар': 8, 'Виноград': 4, 'Бумага': 2 } },
+            'Красное вино': { output: 20, ingredients: { 'Тара': 20, 'Вода': 20, 'Сахар': 23, 'Виноград': 3, 'Бумага': 2 } },
+            'Бурбон': { output: 10, ingredients: { 'Тара': 10, 'Вода': 10, 'Сахар': 60, 'Пшеница': 4, 'Дрожжи': 33, 'Бумага': 2 } },
+            'Виски': { output: 5, ingredients: { 'Тара': 5, 'Бумага': 1, 'Сахар': 30, 'Пшеница': 3, 'Ячмень': 60, 'Древесина': 3, 'Вода': 5 } },
+            'Водка': { output: 20, ingredients: { 'Тара': 20, 'Вода': 20, 'Сахар': 28, 'Пшеница': 4, 'Бумага': 2 } },
+            'Коньяк': { output: 5, ingredients: { 'Тара': 5, 'Бумага': 1, 'Сахар': 30, 'Древесина': 5, 'Виноград': 7, 'Вода': 5 } },
+            'Ликер': { output: 10, ingredients: { 'Тара': 10, 'Бумага': 2, 'Сахар': 43, 'Какао-бобы': 7, 'Пшеница': 3, 'Шалфей': 20, 'Вода': 10 } },
+            'Ром Картер': { output: 5, ingredients: { 'Тара': 5, 'Вода': 5, 'Сахар': 50, 'Шалфей': 35, 'Бумага': 1 } },
+            'Саке': { output: 10, ingredients: { 'Тара': 10, 'Вода': 10, 'Сахар': 33, 'Рис': 10, 'Бумага': 2 } },
+            'Светлое пиво': { output: 20, ingredients: { 'Хмель': 20, 'Бумага': 4, 'Ячмень': 12, 'Тара': 20, 'Вода': 20 } },
+	        'Нефильтр пиво': { output: 20, ingredients: { 'Хмель': 20, 'Бумага': 4, 'Ячмень': 12, 'Тара': 20, 'Вода': 20 } },
+	        'Темное пиво': { output: 20, ingredients: { 'Хмель': 20, 'Бумага': 4, 'Ячмень': 12, 'Тара': 20, 'Вода': 20 } },
+            'Соджу': { output: 10, ingredients: { 'Тара': 10, 'Вода': 10, 'Сахар': 15, 'Ячмень': 36, 'Бумага': 2 } },
+			'Текила': { output: 10, ingredients: { 'Грязная вода': 10,'Дрожжи': 10,'Бумага': 1,'Плод опунции': 24,'Тара': 10} },
+            
+            'Ganesha Elite': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Шалфей': 5, 'Спорынья': 5 } },
+            'Ganesha': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Спорынья': 10 } },
+            'Greyhound': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Хмель': 10 } },
+            'Мигрант': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Ячмень': 10 } },
+            'Patriot': { output: 10, ingredients: { 'Табак': 70, 'Ручка-карандаш': 1, 'Бумага': 15 } },
+            'Red Apple': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Плод опунции': 10 } },
+            'Rendez-Vous': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Плод опунции': 10 } },
+            'Royal Orchid': { output: 20, ingredients: { 'Табак': 70, 'Ручка-карандаш': 1, 'Бумага': 15, 'Пшеница': 1 } },
+            'Strike': { output: 20, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Хмель': 10 } },
+            'Yellow Coyote': { output: 20, ingredients: { 'Табак': 70, 'Ручка-карандаш': 1, 'Бумага': 15, 'Пшеница': 1 } },
+            'Сигары': { output: 7, ingredients: { 'Табак': 80, 'Ручка-карандаш': 1, 'Бумага': 15 } },
+            'Redwood': { output: 10, ingredients: { 'Табак': 80, 'Ручка-карандаш': 1, 'Бумага': 10 } },
+            'Blooming Lotus': { output: 10, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Плод опунции': 5, 'Спорынья': 5 } },
+            'Killmonger': { output: 20, ingredients: { 'Табак': 70, 'Ручка-карандаш': 1, 'Бумага': 10, 'Вишня': 1, 'Какао-бобы': 1 } },
+            'Lovecraft Robust': { output: 10, ingredients: { 'Табак': 60, 'Ручка-карандаш': 1, 'Бумага': 15, 'Земляника': 5, 'Водоросли': 5 } },
+            
+            'Burning Witch': { output: 14, ingredients: { 'Пластмасса': 1, 'Табачный лист': 3, 'Бумага': 1, 'Клубника': 10 } },
+            'Chanunpa': { output: 7, ingredients: { 'Пластмасса': 1, 'Табачный лист': 3, 'Бумага': 1, 'Плод опунции': 10 } },
+            'Incel Flock': { output: 14, ingredients: { 'Пластмасса': 1, 'Табачный лист': 3, 'Бумага': 1, 'Голубика': 10 } },
+            'Siberian Husky': { output: 14, ingredients: { 'Пластмасса': 1, 'Табачный лист': 3, 'Бумага': 1, 'Шалфей': 10 } },
+            'Жевательный табак': { output: 14, ingredients: { 'Пластмасса': 1, 'Табачный лист': 3, 'Бумага': 1, 'Сахар': 5 } }
+        };
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'shop') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('shop-tab').classList.add('active');
+            } else if (tab === 'craft') {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('craft-tab').classList.add('active');
+            } else if (tab === 'warehouse') {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('warehouse-tab').classList.add('active');
+                renderWarehouse();
+                renderComparison();
+            }
+        }
+
+        function renderProducts() {
+            Object.keys(products).forEach(category => {
+                const container = document.getElementById(category);
+                products[category].forEach(product => {
+                    const btn = document.createElement('button');
+                    btn.className = 'product-btn';
+                    btn.onclick = () => addToCart(product.name, product.price);
+                    btn.innerHTML = `
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price} гильз</div>
+                    `;
+                    container.appendChild(btn);
+                });
+            });
+        }
+
+        function renderCraftProducts() {
+            const alcoholContainer = document.getElementById('craftAlcohol');
+            const cigarettesContainer = document.getElementById('craftCigarettes');
+            const snusContainer = document.getElementById('craftSnus');
+
+            Object.keys(craftRecipes).forEach(name => {
+                const recipe = craftRecipes[name];
+                const btn = document.createElement('button');
+                btn.className = 'product-btn';
+                btn.onclick = () => addToCraft(name);
+                btn.innerHTML = `
+                    <div class="product-name">${name}</div>
+                    <div class="product-price">Выход: ${recipe.output} шт</div>
+                `;
+
+                if (['Burning Witch', 'Chanunpa', 'Incel Flock', 'Siberian Husky', 'Жевательный табак'].includes(name)) {
+                    snusContainer.appendChild(btn);
+                } else if (['Ganesha Elite', 'Ganesha', 'Greyhound', 'Мигрант', 'Patriot', 'Red Apple', 'Rendez-Vous', 'Royal Orchid', 'Strike', 'Yellow Coyote', 'Сигары', 'Blooming Lotus', 'Redwood', 'Killmonger', 'Lovecraft Robust'].includes(name)) {
+                    cigarettesContainer.appendChild(btn);
+                } else {
+                    alcoholContainer.appendChild(btn);
+                }
+            });
+        }
+
+        function addToCart(name, price) {
+            if (cart[name]) {
+                cart[name].quantity++;
+            } else {
+                cart[name] = { price, quantity: 1 };
+            }
+            renderCart();
+        }
+
+        function removeFromCart(name) {
+            if (cart[name].quantity > 1) {
+                cart[name].quantity--;
+            } else {
+                delete cart[name];
+            }
+            renderCart();
+        }
+
+        function deleteFromCart(name) {
+            delete cart[name];
+            renderCart();
+        }
+
+        function updateQuantity(name, value) {
+            const quantity = parseInt(value) || 1;
+            if (quantity > 0) {
+                cart[name].quantity = quantity;
+                renderCart();
+            }
+        }
+
+        function clearCart() {
+            cart = {};
+            renderCart();
+        }
+
+        function addToCraft(name) {
+            if (craftCart[name]) {
+                craftCart[name]++;
+            } else {
+                craftCart[name] = 1;
+            }
+            renderCraftResources();
+        }
+
+        function removeCraftItem(name) {
+            if (craftCart[name] > 1) {
+                craftCart[name]--;
+            } else {
+                delete craftCart[name];
+            }
+            renderCraftResources();
+        }
+
+        function deleteCraftItem(name) {
+            delete craftCart[name];
+            renderCraftResources();
+        }
+
+        function updateCraftQuantity(name, value) {
+            const quantity = parseInt(value) || 1;
+            if (quantity > 0) {
+                craftCart[name] = quantity;
+                renderCraftResources();
+            }
+        }
+
+        function clearCraft() {
+            craftCart = {};
+            renderCraftResources();
+        }
+
+        function calculateResources() {
+            const totalResources = {};
+            
+            Object.keys(craftCart).forEach(itemName => {
+                const quantity = craftCart[itemName];
+                const recipe = craftRecipes[itemName];
+                
+                Object.keys(recipe.ingredients).forEach(ingredient => {
+                    const amount = recipe.ingredients[ingredient] * quantity;
+                    if (totalResources[ingredient]) {
+                        totalResources[ingredient] += amount;
+                    } else {
+                        totalResources[ingredient] = amount;
+                    }
+                });
+            });
+            
+            return totalResources;
+        }
+
+        function renderCraftResources() {
+            const resourcesList = document.getElementById('resourcesList');
+            const clearCraftBtn = document.getElementById('clearCraftBtn');
+            
+            const items = Object.keys(craftCart);
+            
+            if (items.length === 0) {
+                resourcesList.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon">📦</div>
+                        <p>Выберите что крафтить</p>
+                    </div>
+                `;
+                clearCraftBtn.style.display = 'none';
+            } else {
+                const resources = calculateResources();
+                
+                let html = '<div style="margin-bottom: 20px;">';
+                html += '<h3 style="color: #b45309; margin-bottom: 10px;">Выбрано для крафта:</h3>';
+                
+                items.forEach(name => {
+                    const quantity = craftCart[name];
+                    const recipe = craftRecipes[name];
+                    html += `
+                        <div class="cart-item" style="margin-bottom: 10px;">
+                            <div class="cart-item-header">
+                                <div class="cart-item-name">${name} (${recipe.output * quantity} шт)</div>
+                                <button class="delete-btn" onclick="deleteCraftItem('${name}')">🗑️</button>
+                            </div>
+                            <div class="cart-item-controls">
+                                <div class="quantity-controls">
+                                    <button class="qty-btn" onclick="removeCraftItem('${name}')">−</button>
+                                    <input type="number" class="qty-input" value="${quantity}" 
+                                           min="1" onchange="updateCraftQuantity('${name}', this.value)">
+                                    <button class="qty-btn" onclick="addToCraft('${name}')">+</button>
+                                </div>
+                                <div class="item-total">${quantity} x</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                html += '<div style="border-top: 3px solid #fcd34d; padding-top: 15px; margin-top: 15px;">';
+                html += '<h3 style="color: #b45309; margin-bottom: 15px;">Необходимые ресурсы:</h3>';
+                
+                const sortedResources = Object.keys(resources).sort();
+                sortedResources.forEach(resource => {
+                    const amount = resources[resource];
+                    html += `
+                        <div class="resource-item">
+                            <span class="resource-name">${resource}</span>
+                            <span class="resource-amount">${Math.ceil(amount)}</span>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                resourcesList.innerHTML = html;
+                clearCraftBtn.style.display = 'block';
+            }
+            
+            // Обновить сравнение если на складе
+            if (document.getElementById('warehouse-tab').classList.contains('active')) {
+                renderComparison();
+            }
+        }
+
+        function showAddResourceModal() {
+            editingResourceName = null;
+            document.getElementById('modalTitle').textContent = 'Добавить ресурс';
+            document.getElementById('resourceNameInput').value = '';
+            document.getElementById('resourceAmountInput').value = '0';
+            document.getElementById('resourceNameInput').disabled = false;
+            document.getElementById('resourceModal').style.display = 'flex';
+        }
+
+        function showEditResourceModal(name) {
+            editingResourceName = name;
+            document.getElementById('modalTitle').textContent = 'Редактировать ресурс';
+            document.getElementById('resourceNameInput').value = name;
+            document.getElementById('resourceAmountInput').value = warehouse[name];
+            document.getElementById('resourceNameInput').disabled = true;
+            document.getElementById('resourceModal').style.display = 'flex';
+        }
+
+        function closeResourceModal() {
+            document.getElementById('resourceModal').style.display = 'none';
+            editingResourceName = null;
+        }
+
+        function saveResource() {
+            const name = document.getElementById('resourceNameInput').value.trim();
+            const amount = parseInt(document.getElementById('resourceAmountInput').value) || 0;
+            
+            if (!name) {
+                alert('Введите название ресурса!');
+                return;
+            }
+            
+            if (editingResourceName && editingResourceName !== name) {
+                delete warehouse[editingResourceName];
+            }
+            
+            warehouse[name] = amount;
+            saveWarehouseToStorage();
+            closeResourceModal();
+            renderWarehouse();
+            renderComparison();
+        }
+
+        function deleteResource(name) {
+            if (confirm(`Удалить "${name}" со склада?`)) {
+                delete warehouse[name];
+                saveWarehouseToStorage();
+                renderWarehouse();
+                renderComparison();
+            }
+        }
+
+        function quickUpdateWarehouse(name, delta) {
+            if (!warehouse[name]) warehouse[name] = 0;
+            warehouse[name] = Math.max(0, warehouse[name] + delta);
+            saveWarehouseToStorage();
+            renderWarehouse();
+            renderComparison();
+        }
+
+        function renderWarehouse() {
+            const warehouseList = document.getElementById('warehouseList');
+            const items = Object.keys(warehouse).sort();
+            
+            if (items.length === 0) {
+                warehouseList.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon">📦</div>
+                        <p>Склад пуст. Добавьте ресурсы!</p>
+                    </div>
+                `;
+            } else {
+                let html = '<div style="display: grid; gap: 10px;">';
+                items.forEach(name => {
+                    const amount = warehouse[name];
+                    html += `
+                        <div class="cart-item">
+                            <div class="cart-item-header">
+                                <div class="cart-item-name">${name}</div>
+                                <div style="display: flex; gap: 5px;">
+                                    <button onclick="showEditResourceModal('${name}')" style="background: #3b82f6; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.9em;">✏️</button>
+                                    <button class="delete-btn" onclick="deleteResource('${name}')">🗑️</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-controls">
+                                <div class="quantity-controls">
+                                    <button class="qty-btn" onclick="quickUpdateWarehouse('${name}', -1)">−</button>
+                                    <span style="font-weight: bold; min-width: 60px; text-align: center;">${amount}</span>
+                                    <button class="qty-btn" onclick="quickUpdateWarehouse('${name}', 1)">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                warehouseList.innerHTML = html;
+            }
+        }
+
+        function renderComparison() {
+            const comparisonList = document.getElementById('comparisonList');
+            const items = Object.keys(craftCart);
+            
+            if (items.length === 0) {
+                comparisonList.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon">📊</div>
+                        <p>Добавьте товары в калькулятор крафта для сравнения</p>
+                    </div>
+                `;
+            } else {
+                const needed = calculateResources();
+                const sortedResources = Object.keys(needed).sort();
+                
+                let html = '<div style="margin-bottom: 15px;">';
+                html += '<h3 style="color: #b45309; margin-bottom: 10px; font-size: 1.1em;">Нужно vs Есть:</h3>';
+                html += '</div>';
+                
+                sortedResources.forEach(resource => {
+                    const needAmount = Math.ceil(needed[resource]);
+                    const haveAmount = warehouse[resource] || 0;
+                    const diff = haveAmount - needAmount;
+                    const isEnough = diff >= 0;
+                    
+                    html += `
+                        <div class="resource-item" style="border-left-color: ${isEnough ? '#10b981' : '#ef4444'};">
+                            <div>
+                                <div class="resource-name">${resource}</div>
+                                <div style="font-size: 0.85em; color: #6b7280; margin-top: 2px;">
+                                    Есть: ${haveAmount} | Нужно: ${needAmount}
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="resource-amount" style="color: ${isEnough ? '#10b981' : '#ef4444'};">
+                                    ${diff >= 0 ? '+' : ''}${diff}
+                                </div>
+                                ${!isEnough ? `<div style="font-size: 0.8em; color: #ef4444; font-weight: bold;">Не хватает!</div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                comparisonList.innerHTML = html;
+            }
+        }
+
+        function saveWarehouseToStorage() {
+            try {
+                // Пытаемся сохранить в localStorage если доступен
+                if (typeof(Storage) !== "undefined") {
+                    localStorage.setItem('yellowGulfinWarehouse', JSON.stringify(warehouse));
+                }
+            } catch (e) {
+                // Игнорируем ошибки localStorage
+            }
+        }
+
+        function loadWarehouseFromStorage() {
+            try {
+                if (typeof(Storage) !== "undefined") {
+                    const saved = localStorage.getItem('yellowGulfinWarehouse');
+                    if (saved) {
+                        warehouse = JSON.parse(saved);
+                    }
+                }
+            } catch (e) {
+                // Игнорируем ошибки localStorage
+            }
+        }
+
+        function renderCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartTotal = document.getElementById('cartTotal');
+            const clearBtn = document.getElementById('clearBtn');
+            const totalItemsEl = document.getElementById('totalItems');
+            const totalPriceEl = document.getElementById('totalPrice');
+
+            const items = Object.keys(cart);
+
+            if (items.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon">🛒</div>
+                        <p>Корзина пуста</p>
+                    </div>
+                `;
+                cartTotal.style.display = 'none';
+                clearBtn.style.display = 'none';
+            } else {
+                cartItems.innerHTML = items.map(name => {
+                    const item = cart[name];
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-header">
+                                <div class="cart-item-name">${name}</div>
+                                <button class="delete-btn" onclick="deleteFromCart('${name}')">🗑️</button>
+                            </div>
+                            <div class="cart-item-controls">
+                                <div class="quantity-controls">
+                                    <button class="qty-btn" onclick="removeFromCart('${name}')">−</button>
+                                    <input type="number" class="qty-input" value="${item.quantity}" 
+                                           min="1" onchange="updateQuantity('${name}', this.value)">
+                                    <button class="qty-btn" onclick="addToCart('${name}', ${item.price})">+</button>
+                                </div>
+                                <div class="item-total">${item.price * item.quantity} гильз</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                const totalItems = items.reduce((sum, name) => sum + cart[name].quantity, 0);
+                const totalPrice = items.reduce((sum, name) => sum + cart[name].price * cart[name].quantity, 0);
+
+                totalItemsEl.textContent = totalItems;
+                totalPriceEl.textContent = totalPrice + ' гильз';
+                cartTotal.style.display = 'block';
+                clearBtn.style.display = 'block';
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        window.addEventListener('DOMContentLoaded', function() {
+            loadWarehouseFromStorage();
+            renderProducts();
+            renderCraftProducts();
+            renderCart();
+            renderCraftResources();
+            renderWarehouse();
+        });
+    </script>
+</body>
+</html>
